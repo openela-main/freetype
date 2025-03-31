@@ -3,7 +3,7 @@
 Summary: A free and portable font rendering engine
 Name: freetype
 Version: 2.9.1
-Release: 9%{?dist}
+Release: 10%{?dist}
 License: (FTL or GPLv2+) and BSD and MIT and Public Domain and zlib with acknowledgement
 Group: System Environment/Libraries
 URL: http://www.freetype.org
@@ -41,6 +41,11 @@ Patch11:  freetype-2.9.1-properly-guard-face-index.patch
 
 # https://bugzilla.redhat.com/show_bug.cgi?id=2077985
 Patch12:  freetype-2.9.1-guard-face-size.patch
+
+# CVE-2025-27363
+# https://access.redhat.com/security/cve/cve-2025-27363
+# Patch by Marc Deslauriers of Canonical
+Patch13: freetype-2.9.1-cve-2025-27363.patch
 
 BuildRequires: libX11-devel
 BuildRequires: libpng-devel
@@ -106,6 +111,7 @@ popd
 %patch10 -p1 -b .windres
 %patch11 -p1 -b .properly-guard-face-index
 %patch12 -p1 -b .guard-face-size
+%patch13 -p1 -b .cve-2025-27363
 
 %build
 
@@ -218,6 +224,10 @@ rm -f $RPM_BUILD_ROOT%{_libdir}/*.{a,la}
 %{_mandir}/man1/*
 
 %changelog
+* Fri Mar 14 2025 Jonathan Wright <jonathan@almalinux.org> - 2.9.1-10
+- Fix CVE-2025-27363 Out-of-bounds Write
+- Resolves: RHEL-83094
+
 * Fri May 27 2022 Marek Kasik <mkasik@redhat.com> - 2.9.1-9
 - Guard face->size
 - Resolves: #2079279
