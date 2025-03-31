@@ -4,7 +4,7 @@
 Summary: A free and portable font rendering engine
 Name: freetype
 Version: 2.10.4
-Release: 9%{?dist}
+Release: 10%{?dist}
 License: (FTL or GPLv2+) and BSD and MIT and Public Domain and zlib with acknowledgement
 URL: http://www.freetype.org
 Source:  http://download.savannah.gnu.org/releases/freetype/freetype-%{version}.tar.xz
@@ -40,6 +40,9 @@ Patch10: freetype-2.10.4-properly-guard-face_index.patch
 
 # https://bugzilla.redhat.com/show_bug.cgi?id=2077985
 Patch11: freetype-2.10.4-guard-face-size.patch
+
+# https://bugzilla.redhat.com/show_bug.cgi?id=2351357
+Patch12: freetype-2.10.4-cve-2025-27363.patch
 
 BuildRequires:  gcc
 BuildRequires: libX11-devel
@@ -108,6 +111,7 @@ popd
 %patch9 -p1 -b .avoid-invalid-face-index
 %patch10 -p1 -b .properly-guard-face_index
 %patch11 -p1 -b .guard-face-size
+%patch12 -p1 -b .cve-2025-27363
 
 %build
 
@@ -249,6 +253,14 @@ rm -f $RPM_BUILD_ROOT%{_libdir}/*.{a,la}
 %{_mandir}/man1/*
 
 %changelog
+* Fri Mar 21 2025 Michel Lind <salimma@centosproject.org> - 2.10.4-10
+- Fix for CVE-2025-27363 out-of-bound write vulnerability
+- Patch initially by Marc Deslauriers of Canonical
+- https://www.openwall.com/lists/oss-security/2025/03/14/3
+- Adjusted for EL9 by Jonathan Wright of AlmaLinux
+- and a member of the Meta security team
+- Resolves: RHEL-83105
+
 * Tue May 31 2022 Marek Kasik <mkasik@redhat.com> - 2.10.4-9
 - Guard face->size
 - Resolves: #2079280
