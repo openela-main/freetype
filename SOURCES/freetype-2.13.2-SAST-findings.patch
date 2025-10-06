@@ -1,0 +1,75 @@
+diff --git a/src/autofit/afglobal.c b/src/autofit/afglobal.c
+index b7403fa65..1fd5a0be3 100644
+--- a/src/autofit/afglobal.c
++++ b/src/autofit/afglobal.c
+@@ -245,6 +245,12 @@
+         af_shaper_get_coverage( globals, style_class, gstyles, 0 );
+     }
+ 
++    if ( dflt >= sizeof (af_style_classes) / sizeof (AF_StyleClass) )
++    {
++      error = FT_THROW( Invalid_Offset );
++      goto Exit;
++    }
++
+     /* ... and finally the default OpenType features of the default script */
+     af_shaper_get_coverage( globals, af_style_classes[dflt], gstyles, 1 );
+ 
+diff --git a/src/tools/apinames.c b/src/tools/apinames.c
+index 5a49b0649..feefb4ee7 100644
+--- a/src/tools/apinames.c
++++ b/src/tools/apinames.c
+@@ -182,6 +182,7 @@ names_dump( FILE*         out,
+   case OUTPUT_WATCOM_LBC:
+     {
+       const char*  dot;
++      char  temp[512];
+ 
+ 
+       if ( !dll_name )
+@@ -195,7 +196,6 @@ names_dump( FILE*         out,
+       dot = strchr( dll_name, '.' );
+       if ( dot )
+       {
+-        char  temp[512];
+         int   len = dot - dll_name;
+ 
+ 
+diff --git a/src/ftbench.c b/src/ftbench.c
+index ec5c46c..7d96f60 100644
+--- a/ft2demos-2.13.2/src/ftbench.c
++++ b/ft2demos-2.13.2/src/ftbench.c
+@@ -907,6 +907,7 @@
+         {
+           fprintf( stderr,
+                    "couldn't allocate memory to pre-load font file\n" );
++          fclose( file );
+ 
+           return 1;
+         }
+@@ -916,9 +917,11 @@
+           fprintf( stderr, "read error\n" );
+           free( memory_file );
+           memory_file = NULL;
++          fclose( file );
+ 
+           return 1;
+         }
++        fclose( file );
+       }
+ 
+       error = FT_New_Memory_Face( lib,
+diff --git a/src/ftgrid.c b/src/ftgrid.c
+index bae4826..1a8f421 100644
+--- a/ft2demos-2.13.2/src/ftgrid.c
++++ b/ft2demos-2.13.2/src/ftgrid.c
+@@ -420,6 +420,9 @@
+     if ( !line )
+       return;
+ 
++    if (bit->mode == gr_pixel_mode_mono)
++      memset( line, 0, (size_t)( pitch * bit->rows * scale * scale ));
++
+     switch( bit->mode )
+     {
+       case gr_pixel_mode_mono:
